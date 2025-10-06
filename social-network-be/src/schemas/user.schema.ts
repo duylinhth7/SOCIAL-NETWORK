@@ -9,7 +9,7 @@ export class User{
     fullname: string;
 
     @Prop({unique: true})
-    email: string;
+    email: string;  
 
     @Prop()
     password: string;
@@ -17,11 +17,14 @@ export class User{
     @Prop()
     avatar: string;
 
+    @Prop()
+    descrption: string;
+
     @Prop({type: [String], default: []})
     followers: string[]
 
     @Prop({type: [String], default: []})
-    following: string[]
+    followings: string[]
 
     @Prop({enum: ["active", "inactive"], default:"active"})
     status: string
