@@ -16,6 +16,7 @@ import { generateOtp } from '../../helpers/generate';
 import { ForgetPassword } from 'src/schemas/forgetPassword.schema';
 import { ResetPasswordAuthDto } from './dto/resetPassword-auth.dto';
 import { sendMail } from 'src/helpers/sendMail';
+import { LoginAuthDto } from './dto/login-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,13 +31,17 @@ export class AuthService {
 
   //ValidateUser
   async validateUser(email: string, password: string) {
-    const user = await this.userService.findOne(email);
+    try {
+      const user = await this.userService.findOne(email);
     if (!user) {
       throw new UnauthorizedException('Thông tin email không hợp lệ!');
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       return user;
+    }
+    } catch (error) {
+      console.log(error)
     }
   }
   //End ValidateUser
@@ -72,10 +77,14 @@ export class AuthService {
 
   //Login
   async login(user: any) {
-    const payload = { email: user['email'] };
+   try {
+     const payload = { email: user['email'] };
     return {
       access_token: await this.jwtService.sign(payload),
     };
+   } catch (error) {
+    console.log(error)
+   }
   }
 
   //ForgetPassword
