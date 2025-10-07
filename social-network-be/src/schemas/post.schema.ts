@@ -17,7 +17,7 @@ export class Post{
     tags: string[]
 
     @Prop({default: "public"})
-    visable: string
+    visibility: string
 
     @Prop({type: [String], default: []})
     likes: string[]
