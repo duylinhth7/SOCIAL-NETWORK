@@ -15,7 +15,7 @@ export class Comment{
     content: string;
 
     @Prop({type: [String], default: []})
-    images: string[];
+    image: string[];
 
     @Prop({type: [String], default: []})
     likes: String[]
@@ -24,4 +24,4 @@ export class Comment{
     toxic: Boolean
 }
 
-export const PostSchema = SchemaFactory.createForClass(Comment)
+export const CommentSchema = SchemaFactory.createForClass(Comment)

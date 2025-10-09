@@ -74,4 +74,33 @@ export class PostsController {
   deletePost(@Req() req:any, @Param("id") id: string){
     return this.postsService.deletePost(req.user, id);
   }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Post("/reactions/:id")
+  reactionsPost(@Req() req: any, @Param("id") id:string, @Body() data:any){
+    return this.postsService.reactionsPost(req.user, id, data);
+  }
+
+
+  @UseInterceptors(FileInterceptor('image'))
+  @UseGuards(JwtAuthGuard)
+  @Post("/comment/:id")
+  commentPost(@Req() req:any, @Param("id") id:string, @Body() data:any, @UploadedFile() image: Express.Multer.File){
+    return this.postsService.commentPost(req.user, id, data, image)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete("/comment/delete/:id")
+  deleteComment(@Req() req:any, @Param("id") id:string){
+    return this.postsService.deleteComment(req.user, id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get("/comment/:id")
+  getAllComment(@Req() req:any, @Param("id") id:string){
+    return this.postsService.getAllComment(req.user, id);
+  }
+
+
 }

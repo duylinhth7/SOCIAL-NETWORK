@@ -9,12 +9,14 @@ import { UploadService } from '../upload/upload.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from 'src/schemas/post.schema';
 import mongoose, { Model, Types } from 'mongoose';
+import { Comment } from 'src/schemas/comment.schema';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly uploadService: UploadService,
     @InjectModel(Post.name) private postModel: Model<Post>,
+    @InjectModel(Comment.name) private commentModel: Model<Comment>,
   ) {}
 
   //Create Post
@@ -133,6 +135,89 @@ export class PostsService {
       return deletePost;
     } catch (error) {
       throw error;
+    }
+  }
+
+  //LikePost
+  async reactionsPost(user:any, id:string, data:any){
+    try {
+      const type:string = data.type;
+      enum ReactionType{
+        LIKE= "like",
+        UNLIKE= "unlike"
+      }
+      switch(type){
+        case ReactionType.LIKE:
+          await this.postModel.updateOne({
+            _id: id
+          }, {
+            $addToSet: {likes: user._id}
+          });
+          break;
+        case ReactionType.UNLIKE:
+          await this.postModel.updateOne({
+            _id: id
+          }, {
+            $pull: {likes: user._id}
+          });
+          break
+        default:
+          throw new Error("Invalid reaction type");
+      }
+      const post = await this.postModel.findById(id);
+      return post;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  //Comment post
+  async commentPost(user:any, id:string, data:any, image:any){
+    try {
+      let url:any = [];
+      const content:string = data.content;
+      data["user_id"] = user._id;
+      if(image){
+        url = await this.uploadService.uploadFile(image);
+      };
+
+      //Phần predict toxic
+      //...
+      //End Phần predict toxic
+      
+      const comment = {
+        post_id: id,
+        user_id: user._id,
+        content: content,
+        image: url
+      }
+      const newComment = await this.commentModel.create(comment);
+      return newComment
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  //Delete Comment
+  async deleteComment(user:any, id:string){
+    try {
+      const deleted = await this.commentModel.deleteOne({
+        _id: id,
+        user_id: user._id
+      });
+      return deleted;
+    } catch (error) {
+      throw error
+    }
+  }
+
+  // Get all comment
+  async getAllComment(user:any, id:string){
+    try {
+      const comments = await this.commentModel.find({post_id: id});
+      return comments;
+    } catch (error) {
+      throw error
     }
   }
 }
