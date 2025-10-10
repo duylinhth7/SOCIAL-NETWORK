@@ -46,6 +46,13 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+  //Get info me
+  @UseGuards(JwtAuthGuard)
+  @Get("/me")
+  async getProfile(@Req() req:any) {
+    return req.user
+  }
+
   //Quên mật khẩu
   @Post('/forget-password')
   async forgetPassword(@Body() data: forgetPasswordAuthDto) {
