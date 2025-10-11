@@ -56,6 +56,7 @@ export class PostsService {
                 { user_id: user._id },
               ],
             })
+            .populate("user_id", "fullname avatar") 
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -63,6 +64,7 @@ export class PostsService {
         case 'myprofile':
           posts = await this.postModel
             .find({ user_id: user._id })
+            .populate("user_id", "fullname avatar") 
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);

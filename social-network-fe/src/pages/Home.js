@@ -1,7 +1,11 @@
+import Feed from "../components/Feed";
+
 function Home(){
     return(
         <>
-        Home
+        <div className="mx-auto px-36 py-5">
+            <Feed />
+        </div>
         </>
     )
 }
