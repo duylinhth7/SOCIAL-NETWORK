@@ -33,15 +33,15 @@ export class AuthService {
   async validateUser(email: string, password: string) {
     try {
       const user = await this.userService.findOne(email);
-    if (!user) {
-      throw new UnauthorizedException('Thông tin email không hợp lệ!');
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (isMatch) {
-      return user;
-    }
+      if (!user) {
+        throw new UnauthorizedException('Thông tin email không hợp lệ!');
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        return user;
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
   //End ValidateUser
@@ -77,14 +77,14 @@ export class AuthService {
 
   //Login
   async login(user: any) {
-   try {
-     const payload = { email: user['email'] };
-    return {
-      access_token: await this.jwtService.sign(payload),
-    };
-   } catch (error) {
-    console.log(error)
-   }
+    try {
+      const payload = { email: user['email'] };
+      return {
+        access_token: await this.jwtService.sign(payload),
+      };
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   //ForgetPassword
@@ -123,7 +123,8 @@ export class AuthService {
             </p>
         </div>
         `;
-      return sendMail(email, subject, html);
+      sendMail(email, subject, html);
+      return { message: 'Gửi mã xác nhận thành công!' };
     } catch (error) {
       return error;
     }
@@ -148,15 +149,20 @@ export class AuthService {
   }
 
   //ResetPassWord
-  async resetPassword(data: ResetPasswordAuthDto) {
+  async resetPassword(user: any, data: ResetPasswordAuthDto) {
     try {
       if (data.password !== data.confirmPassword) {
         throw new BadRequestException('ConfirmPassword không giống password!');
       }
       const hashedPassword = await bcrypt.hash(data.password, 10);
-      return await this.userModel.updateOne({
-        password: hashedPassword,
-      });
+      return await this.userModel.updateOne(
+        {
+          email: user.email,
+        },
+        {
+          password: hashedPassword,
+        },
+      );
     } catch (error) {
       return error;
     }
